@@ -10,6 +10,7 @@ from project1_classes.fsa_classes.q_mark_fsa import QMarkFSA
 from project1_classes.fsa_classes.right_paren_fsa import RightParenFSA
 from project1_classes.fsa_classes.rules_fsa import RulesFSA
 from project1_classes.fsa_classes.schemes_fsa import SchemesFSA
+from project1_classes.fsa_classes.string_fsa import StringFSA
 from .fsa_classes.fsa import FSA
 from .fsa_classes.colon_dash_fsa import ColonDashFSA
 from .token import Token
@@ -33,6 +34,7 @@ class LexerFSM:
         self.schemes_fsa: SchemesFSA = SchemesFSA()
         self.facts_fsa: FactsFSA = FactsFSA()
         self.rules_fsa: RulesFSA = RulesFSA()
+        self.string_fsa: StringFSA = StringFSA()
 
         #FSA manager dictionary
         self.fsa_keys: list[function] = [self.left_paren_fsa, self.right_paren_fsa, self.comma_fsa, self.period_fsa, 
@@ -51,29 +53,36 @@ class LexerFSM:
         new_strings: list[str] = input.split('\n')
         if len(new_strings) > 0 :
             for index, string in enumerate(new_strings) :
+                print(string)
                 line_num = index + 1
                 # TODO: add string and comment clauses here
-                if string.startswith('\'') :
-                    ...
+                if  string.startswith('\'') :
+                    print('is string')
+                    if self.string_fsa.run(string):
+                        print('fsa working')
+                        tokens.append(Token("String", string, line_num))
+                    else :
+                        print(self.string_fsa.run(string))
+                        
                 # TODO: split strings by spaces
                 string = string.strip().replace(" ", "")
                 print(string)
                 token_types: list[str] = self.lex(string)
                 for token_type in token_types:
-                    token: Token = Token(token_type, string, line_num)
-                    if (token.value == "") :
+                    # token: Token = Token(token_type, string, line_num)
+                    if (string == "") :
                         continue
 
-                    if (token.token_type == "UNDEFINED") :
-                        tokens.append(token)
+                    if (token_type == "UNDEFINED") :
+                        tokens.append("UNDEFINED", string, line_num)
                         for object in tokens :
                             if isinstance(object, Token): 
                                 output_string = output_string + object.to_string() + "\n"
                         print("Total Tokens = Error on line " +  str(line_num))
                         exit()
 
-                    tokens.append(token)
-                    print(token)
+                    tokens.append(Token(token_type, string, line_num))
+                    # print(token)
         
         EOF.set_line(line_num)
         tokens.append(EOF)
@@ -160,11 +169,14 @@ class LexerFSM:
                     output_token = "SCHEMES"
                     output_tokens.append(output_token)
 
+                # FIXME: why are these always returning true?
                 if self.fsa_dict[self.facts_fsa]:
+                    print(self.fsa_dict[self.facts_fsa])
                     output_token = "FACTS"
                     output_tokens.append(output_token)
 
                 if self.fsa_dict[self.rules_fsa]:
+                    print(self.fsa_dict[self.rules_fsa])
                     output_token = "RULES"
                     output_tokens.append(output_token)
             

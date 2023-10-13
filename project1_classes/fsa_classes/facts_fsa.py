@@ -8,7 +8,7 @@ class FactsFSA(FSA):
     def S0(self):
         current_input = self._FSA__get_current_input()
         next_state: function = None
-        if current_input == 'f' or 'F' :
+        if current_input == 'f' or current_input == 'F' :
             next_state = self.S1
         else:
             next_state = self.S_err
@@ -17,7 +17,7 @@ class FactsFSA(FSA):
     def S1(self):
         current_input = self._FSA__get_current_input()
         next_state: function = None
-        if current_input == 'a' or 'A' :
+        if current_input == 'a' or current_input == 'A' :
             next_state = self.S2
         else:
             next_state = self.S_err
@@ -26,7 +26,7 @@ class FactsFSA(FSA):
     def S2(self):
         current_input = self._FSA__get_current_input()
         next_state: function = None
-        if current_input == 'c' or 'C' :
+        if current_input == 'c' or current_input == 'C' :
             next_state = self.S3
         else:
             next_state = self.S_err
@@ -35,7 +35,7 @@ class FactsFSA(FSA):
     def S3(self):
         current_input = self._FSA__get_current_input()
         next_state: function = None
-        if current_input == 't' or 'T' :
+        if current_input == 't' or current_input == 'T' :
             next_state = self.S4
         else:
             next_state = self.S_err
@@ -44,7 +44,7 @@ class FactsFSA(FSA):
     def S4(self):
         current_input = self._FSA__get_current_input()
         next_state: function = None
-        if current_input == 's' or 'S' :
+        if current_input == 's' or current_input == 'S' :
             next_state = self.S5
         else:
             next_state = self.S_err
