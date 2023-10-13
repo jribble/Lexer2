@@ -2,13 +2,14 @@ from .fsa import FSA
 
 class RulesFSA(FSA):
     def __init__(self) -> None:
-        FSA.__init__(self, "RulesFSA")
+        FSA.__init__(self, "RULES")
         self.accept_states.add(self.S5)
 
     def S0(self):
         current_input = self._FSA__get_current_input()
         next_state: function = None
         if current_input == 'r' or current_input == 'R' :
+            self.num_chars_consumed += 1
             next_state = self.S1
         else:
             next_state = self.S_err
@@ -18,6 +19,7 @@ class RulesFSA(FSA):
         current_input = self._FSA__get_current_input()
         next_state: function = None
         if current_input == 'u' or current_input == 'U' :
+            self.num_chars_consumed += 1
             next_state = self.S2
         else:
             next_state = self.S_err
@@ -27,6 +29,7 @@ class RulesFSA(FSA):
         current_input = self._FSA__get_current_input()
         next_state: function = None
         if current_input == 'l' or current_input == 'L' :
+            self.num_chars_consumed += 1
             next_state = self.S3
         else:
             next_state = self.S_err
@@ -36,6 +39,7 @@ class RulesFSA(FSA):
         current_input = self._FSA__get_current_input()
         next_state: function = None
         if current_input == 'e' or current_input == 'E' :
+            self.num_chars_consumed += 1
             next_state = self.S4
         else:
             next_state = self.S_err
@@ -45,6 +49,7 @@ class RulesFSA(FSA):
         current_input = self._FSA__get_current_input()
         next_state: function = None
         if current_input == 's' or current_input == 'S' :
+            self.num_chars_consumed += 1
             next_state = self.S5
         else:
             next_state = self.S_err
