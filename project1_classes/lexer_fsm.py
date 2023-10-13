@@ -37,9 +37,10 @@ class LexerFSM:
         self.string_fsa: StringFSA = StringFSA()
 
         #FSA manager dictionary
-        self.fsa_keys: list[function] = [self.left_paren_fsa, self.right_paren_fsa, self.comma_fsa, self.period_fsa, 
-                                         self.q_mark_fsa, self.multiply_fsa, self.add_fsa, self.comment_fsa, 
-                                         self.schemes_fsa, self.facts_fsa, self.rules_fsa]
+        # self.fsa_keys: list[function] = [self.colon_dash_fsa, self.colon_fsa, self.left_paren_fsa, self.right_paren_fsa, self.comma_fsa, self.period_fsa, 
+        #                                  self.q_mark_fsa, self.multiply_fsa, self.add_fsa, self.comment_fsa, 
+        #                                  self.schemes_fsa, self.facts_fsa, self.rules_fsa]
+        self.fsa_keys: list[function] = [self.colon_dash_fsa, self.colon_fsa]
         self.colon_or_dash_keys: list[function] = [self.colon_dash_fsa, self.colon_fsa]
         self.fsa_dict: dict[Token, bool] = dict.fromkeys(self.fsa_keys, False)
         self.colon_or_dash_dict: dict[Token, bool] = dict.fromkeys(self.colon_or_dash_keys, False)
@@ -55,25 +56,14 @@ class LexerFSM:
             for index, string in enumerate(new_strings) :
                 print(string)
                 line_num = index + 1
-                # TODO: add string and comment clauses here
-                if  string.startswith('\'') :
-                    print('is string')
-                    if self.string_fsa.run(string):
-                        print('fsa working')
-                        tokens.append(Token("String", string, line_num))
-                    else :
-                        print(self.string_fsa.run(string))
                         
-                # TODO: split strings by spaces
-                string = string.strip().replace(" ", "")
-                print(string)
-                token_types: list[str] = self.lex(string)
-                for token_type in token_types:
+                token_tuples: list[str] = self.lex(string)
+                for token_tuple in token_tuples:
                     # token: Token = Token(token_type, string, line_num)
                     if (string == "") :
                         continue
 
-                    if (token_type == "UNDEFINED") :
+                    if (token_tuple[0] == "UNDEFINED") :
                         tokens.append("UNDEFINED", string, line_num)
                         for object in tokens :
                             if isinstance(object, Token): 
@@ -81,7 +71,7 @@ class LexerFSM:
                         print("Total Tokens = Error on line " +  str(line_num))
                         exit()
 
-                    tokens.append(Token(token_type, string, line_num))
+                    tokens.append(Token(token_tuple[0], token_tuple[1], line_num))
                     # print(token)
         
         EOF.set_line(line_num)
@@ -94,17 +84,29 @@ class LexerFSM:
         output_string = output_string + "\n" + "Total Tokens = " + str(len(tokens))
         return output_string
     
-    def lex(self, input_string: str) -> list[str]:
-        # check : and :-, 
-
-        #check the rest, if one is found return that specific token and input
-        for FSA in self.colon_or_dash_dict.keys():
-            self.colon_or_dash_dict[FSA] = FSA.run(input_string)
-
-        for FSA in self.fsa_dict.keys():
-            self.fsa_dict[FSA] = FSA.run(input_string)
-            # print(self.fsa_dict[FSA])
-        return self.__manager_fsm__()
+    def lex(self, input_string: str) -> list[(str,str)]:
+        tokens: str = []
+        cur_input: str = input_string
+        while len(cur_input) > 0:
+            best_chars_consumed: int = 0
+            best_fsa: FSA = None
+            for fsa in self.fsa_dict.keys():
+                if fsa.run(cur_input):
+                    num_chars_consumed: int = fsa.get_num_chars_consumed()
+                    if num_chars_consumed > best_chars_consumed:
+                        best_chars_consumed = num_chars_consumed
+                        best_fsa = fsa
+            if best_fsa != None:
+                token_input: str = ""
+                if best_chars_consumed > 0:
+                    token_input = cur_input[:best_chars_consumed]
+                tokens.append((best_fsa.get_name(), token_input))
+            else:
+                best_chars_consumed = 1
+            cur_input = cur_input[best_chars_consumed:]
+            self.reset()
+        return tokens
+        # return self.__manager_fsm__()
 
     def __manager_fsm__(self) -> list[str]:
         output_token: str = "UNDEFINED"

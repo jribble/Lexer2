@@ -7,11 +7,12 @@ from project1_classes.lexer_fsm import LexerFSM
 
 my_lexer: LexerFSM = LexerFSM()
 fsaTest: FSA = CommaFSA()
-input_string: str = """
-'hi''s' .
-rules
-facts
-"""
+input_string: str = "::-::"
+# input_string: str = """
+# 'hi''s' .
+# rules
+# facts
+# """
 my_lexer.reset()
 points = my_lexer.run(input_string)#fsaTest.run(',')
 
