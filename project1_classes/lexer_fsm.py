@@ -88,26 +88,17 @@ class LexerFSM:
         tokens: str = []
         cur_input: str = input_string
         while len(cur_input) > 0:
-            best_chars_consumed: int = 0
             best_fsa: FSA = None
             for fsa in self.fsa_dict.keys():
                 if fsa.run(cur_input):
-                    num_chars_consumed: int = fsa.get_num_chars_consumed()
-                    if num_chars_consumed > best_chars_consumed:
-                        best_chars_consumed = num_chars_consumed
-                        best_fsa = fsa
+                    best_fsa = FSA.better(best_fsa, fsa)
             if best_fsa != None:
-                token_input: str = ""
-                if best_chars_consumed > 0:
-                    token_input = cur_input[:best_chars_consumed]
-                tokens.append((best_fsa.get_name(), token_input))
+                tokens.append((best_fsa.get_name(), best_fsa.get_consumed_input()))
             else:
                 best_chars_consumed = 1
-            cur_input = cur_input[best_chars_consumed:]
+            cur_input = best_fsa.get_remaining_input()
             self.reset()
         return tokens
-        # return self.__manager_fsm__()
-
     def __manager_fsm__(self) -> list[str]:
         output_token: str = "UNDEFINED"
         output_tokens: list[str] = []

@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Callable as function
 
 class FSA:
@@ -36,8 +37,24 @@ class FSA:
 
     def get_num_chars_consumed(self) -> int:
         return self.num_chars_consumed
+    
+    def get_consumed_input(self) -> str:
+        return self.input_string[:self.num_chars_consumed]
+    
+    def get_remaining_input(self) -> str:
+        return self.input_string[self.num_chars_consumed:]
 
     def __get_current_input(self) -> str:  # The double underscore makes the method private
         current_input: str = self.input_string[self.num_chars_read]
         self.num_chars_read += 1
         return current_input
+    
+    @staticmethod
+    def better(left: FSA, right: FSA) -> FSA:
+        if left == None:
+            return right
+        if right == None:
+            return left
+        if right.get_num_chars_consumed() > left.get_num_chars_consumed():
+            return right
+        return left
