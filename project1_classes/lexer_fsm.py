@@ -11,6 +11,7 @@ from project1_classes.fsa_classes.right_paren_fsa import RightParenFSA
 from project1_classes.fsa_classes.rules_fsa import RulesFSA
 from project1_classes.fsa_classes.schemes_fsa import SchemesFSA
 from project1_classes.fsa_classes.string_fsa import StringFSA
+from project1_classes.fsa_classes.whitespace_fsa import WhitespaceFSA
 from .fsa_classes.fsa import FSA
 from .fsa_classes.colon_dash_fsa import ColonDashFSA
 from .token import Token
@@ -35,15 +36,12 @@ class LexerFSM:
         self.facts_fsa: FactsFSA = FactsFSA()
         self.rules_fsa: RulesFSA = RulesFSA()
         self.string_fsa: StringFSA = StringFSA()
+        self.whitespace_fsa: WhitespaceFSA = WhitespaceFSA()
 
         #FSA manager dictionary
-        # self.fsa_keys: list[function] = [self.colon_dash_fsa, self.colon_fsa, self.left_paren_fsa, self.right_paren_fsa, self.comma_fsa, self.period_fsa, 
-        #                                  self.q_mark_fsa, self.multiply_fsa, self.add_fsa, self.comment_fsa, 
-        #                                  self.schemes_fsa, self.facts_fsa, self.rules_fsa]
-        self.fsa_keys: list[function] = [self.colon_dash_fsa, self.colon_fsa]
-        self.colon_or_dash_keys: list[function] = [self.colon_dash_fsa, self.colon_fsa]
-        self.fsa_dict: dict[Token, bool] = dict.fromkeys(self.fsa_keys, False)
-        self.colon_or_dash_dict: dict[Token, bool] = dict.fromkeys(self.colon_or_dash_keys, False)
+        self.fsas: list[function] = [self.colon_dash_fsa, self.colon_fsa, self.left_paren_fsa, self.right_paren_fsa, self.comma_fsa, self.period_fsa, 
+                                         self.q_mark_fsa, self.multiply_fsa, self.add_fsa, self.comment_fsa, 
+                                         self.schemes_fsa, self.facts_fsa, self.rules_fsa, self.string_fsa, self.whitespace_fsa]
 
     
     def run(self, input: str) -> str:
@@ -64,7 +62,7 @@ class LexerFSM:
                         continue
 
                     if (token_tuple[0] == "UNDEFINED") :
-                        tokens.append("UNDEFINED", string, line_num)
+                        tokens.append(("UNDEFINED", string, line_num))
                         for object in tokens :
                             if isinstance(object, Token): 
                                 output_string = output_string + object.to_string() + "\n"
@@ -81,7 +79,7 @@ class LexerFSM:
             if isinstance(object, Token): 
                 output_string = output_string + object.to_string() + "\n"
 
-        output_string = output_string + "\n" + "Total Tokens = " + str(len(tokens))
+        output_string = output_string + "Total Tokens = " + str(len(tokens)) + "\n"
         return output_string
     
     def lex(self, input_string: str) -> list[(str,str)]:
@@ -89,16 +87,17 @@ class LexerFSM:
         cur_input: str = input_string
         while len(cur_input) > 0:
             best_fsa: FSA = None
-            for fsa in self.fsa_dict.keys():
+            for fsa in self.fsas:
                 if fsa.run(cur_input):
                     best_fsa = FSA.better(best_fsa, fsa)
             if best_fsa != None:
                 tokens.append((best_fsa.get_name(), best_fsa.get_consumed_input()))
+                cur_input = best_fsa.get_remaining_input()
             else:
-                best_chars_consumed = 1
-            cur_input = best_fsa.get_remaining_input()
+                tokens.append(("UNDEFINED", cur_input))
+                cur_input = ""
             self.reset()
         return tokens
 
     def reset(self) -> None:
-        for FSA in self.fsa_dict.keys() : FSA.reset()
+        for FSA in self.fsas : FSA.reset()
