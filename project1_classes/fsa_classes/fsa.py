@@ -8,6 +8,7 @@ class FSA:
         self.input_string: str = ''
         self.fsa_name: str = name
         self.num_chars_read: int = 0
+        self.num_chars_consumed: int = 0
     
     def S0(self) -> function:
         raise NotImplementedError()
@@ -25,12 +26,16 @@ class FSA:
 
     def reset(self) -> None:
         self.num_chars_read = 0
+        self.num_chars_consumed = 0
 
     def get_name(self) -> str: 
         return self.fsa_name
 
     def set_name(self, FSA_name) -> None:
         self.fsa_name = FSA_name
+
+    def get_num_chars_consumed(self) -> int:
+        return self.num_chars_consumed
 
     def __get_current_input(self) -> str:  # The double underscore makes the method private
         current_input: str = self.input_string[self.num_chars_read]
