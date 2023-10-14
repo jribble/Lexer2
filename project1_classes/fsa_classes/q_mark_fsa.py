@@ -2,7 +2,7 @@ from .fsa import FSA
 
 class QMarkFSA(FSA):
     def __init__(self) -> None:
-        FSA.__init__(self, "QMARK")
+        FSA.__init__(self, "Q_MARK")
         self.accept_states.add(self.S1)
 
     def S0(self):

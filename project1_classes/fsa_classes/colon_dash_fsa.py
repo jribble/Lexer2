@@ -3,7 +3,7 @@ from typing import Callable as function
 
 class ColonDashFSA(FSA):
     def __init__(self) -> None:
-        FSA.__init__(self, "COLONDASH")
+        FSA.__init__(self, "COLON_DASH")
         """Class constructor"""
         self.accept_states.add(self.S2)
 

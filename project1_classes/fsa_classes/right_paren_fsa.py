@@ -2,7 +2,7 @@ from .fsa import FSA
 
 class RightParenFSA(FSA):
     def __init__(self) -> None:
-        FSA.__init__(self, "RIGHTPAREN")
+        FSA.__init__(self, "RIGHT_PAREN")
         self.accept_states.add(self.S1)
 
     def S0(self):
