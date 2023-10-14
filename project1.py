@@ -3,8 +3,7 @@ from project1_classes.lexer_fsm import LexerFSM
 # Return your program output here for grading (can treat this function as your "main")
 def project1(input: str) -> str:
     lexer: LexerFSM = LexerFSM()
-    lexer.run(input)
-    return "This is my answer!"
+    return lexer.run(input)
 
 def read_file_contents(filepath):
     with open(filepath, "r") as f:
