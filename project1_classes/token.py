@@ -11,8 +11,17 @@ class Token():
     def set_type(self, type: str):
         self.token_type = type
 
+    def get_type(self) -> str:
+        return self.token_type
+
     def set_value(self, value: str):
         self.value = value
 
+    def get_value(self) -> str:
+        return self.value
+
     def set_line(self, line_num: int):
         self.line = line_num
+
+    def get_line(self) -> int:
+        return self.line
